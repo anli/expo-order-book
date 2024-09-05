@@ -1,50 +1,31 @@
-# Welcome to your Expo app 👋
+# Orderbook
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Orderbook is a mobile application that allows users to search for cryptocurrencies and see their order book.
 
-## Get started
+## Development
 
-1. Install dependencies
+### Prerequisites
 
-   ```bash
-   npm install
-   ```
+- Node.js
+- Expo CLI
+- Git
+- Watchman
+- Flow
+- Yarn
+- React Native CLI
+- Xcode
+- Android Studio
 
-2. Start the app
+### Installation
 
-   ```bash
-    npx expo start
-   ```
+Run `yarn install --frozen-lockfile` to install the dependencies.
 
-In the output, you'll find options to open the app in a
+### Running the App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Run `yarn start` to start the development server.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Building the App
 
-## Get a fresh project
+Run `yarn ios` to build the app for iOS.
 
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Run `yarn android` to build the app for Android.
