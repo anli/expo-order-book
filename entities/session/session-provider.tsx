@@ -5,20 +5,22 @@ import {
   useState,
   useMemo
 } from 'react';
+import { LoginResponse, useLogin } from './use-login';
+import { router } from 'expo-router';
+import { Alert } from 'react-native';
 
 const AuthContext = createContext<{
-  signIn: () => void;
+  signIn: (pin: string) => Promise<void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
 }>({
-  signIn: () => null,
+  signIn: () => Promise.resolve(),
   signOut: () => null,
   session: null,
   isLoading: false
 });
 
-// This hook can be used to access the user info.
 export function useSession() {
   const value = useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {
@@ -32,12 +34,21 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<string | null>(null);
-  const isLoading = false;
+  const { mutate: login, isPending: isLoginLoading } = useLogin({
+    onSuccess: (data: LoginResponse) => {
+      setSession(data.accessToken);
+      router.replace('/');
+    },
+    onError: (error: Error) => {
+      Alert.alert(error.message);
+    }
+  });
+  const isLoading = isLoginLoading;
 
   const value = useMemo(
     () => ({
-      signIn: () => {
-        setSession('xxx');
+      signIn: async (pin: string) => {
+        login(pin);
       },
       signOut: () => {
         setSession(null);
@@ -45,7 +56,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
       session,
       isLoading
     }),
-    [session, isLoading]
+    [session, isLoading, login]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
