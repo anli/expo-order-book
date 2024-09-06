@@ -5,7 +5,7 @@ import {
   useState,
   useMemo
 } from 'react';
-import { LoginResponse, useLogin } from './use-login';
+import { LoginResponse, useLogin } from '@/shared/api';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 

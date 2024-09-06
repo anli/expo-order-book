@@ -7,12 +7,16 @@ invariant(
 );
 const url = `${process.env.EXPO_PUBLIC_SERVER_HOST_URL}/symbols`;
 
-const getSymbols = async (): Promise<{ symbol: string }[]> => {
+export type CurrencySymbol = {
+  symbol: string;
+};
+
+const getSymbols = async (): Promise<CurrencySymbol[]> => {
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
   const response = await fetch(url);
   const { data } = await response.json();
-  return data.sort((a: { symbol: string }, b: { symbol: string }) =>
+  return data.sort((a: CurrencySymbol, b: CurrencySymbol) =>
     a.symbol.localeCompare(b.symbol)
   );
 };
