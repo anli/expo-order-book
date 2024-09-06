@@ -82,7 +82,6 @@ export default function SignIn() {
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  keyboardType="visible-password"
                   textContentType="password"
                   autoCapitalize="none"
                   autoCorrect={false}
