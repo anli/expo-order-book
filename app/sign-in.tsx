@@ -39,7 +39,8 @@ export default function SignIn() {
   }, [params.symbol, setValue]);
 
   useEffect(() => {
-    DevSettings.addMenuItem('Preset Pin', () => {
+    DevSettings.addMenuItem('Prefill Form', () => {
+      setValue('symbol', 'BTC-USDT');
       setValue('pin', 'Mys3cureP1n!123');
     });
   }, [setValue]);
@@ -123,7 +124,6 @@ export default function SignIn() {
       </View>
       <Button
         disabled={isLoading}
-        loading={isLoading}
         style={tw`m-4`}
         mode="contained"
         onPress={handleSubmit(handleSignIn)}>

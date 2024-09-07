@@ -1,23 +1,26 @@
 import { Pressable, View } from 'react-native';
 
 import { useSession } from '@/entities/session';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { Button, List, Text } from 'react-native-paper';
+import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, Button, List, Text } from 'react-native-paper';
 import { useMarketOrderBook } from '@/shared/api';
 import BigNumber from 'bignumber.js';
 import { groupByWholeNumber } from '@/shared/lib';
 import tw from 'twrnc';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency, formatCrypto } from '@/shared/lib';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 
 export default function OrderBook() {
   const { signOut } = useSession();
   const params = useLocalSearchParams<{ symbol: string }>();
   const { bottom } = useSafeAreaInsets();
-  const { data: orderBook = { bids: [], asks: [] } } = useMarketOrderBook(
-    params.symbol
-  );
+  const {
+    data: orderBook = { bids: [], asks: [] },
+    refetch,
+    isLoading,
+    isFetching
+  } = useMarketOrderBook(params.symbol);
   const bidAveragePrice = formatCurrency(
     orderBook.bids
       .reduce((acc, bid) => acc.plus(BigNumber(bid[0])), BigNumber(0))
@@ -49,19 +52,15 @@ export default function OrderBook() {
     return { ask, bid };
   });
 
-  const handleWebsocket = () => {
-    console.log('Websocket');
-  };
-
   return (
     <>
       <Stack.Screen
         options={{
           headerTitle: 'Order Book',
           headerLeft: () => (
-            <Pressable onPress={handleWebsocket}>
-              <Button>Websocket</Button>
-            </Pressable>
+            <Link href="/real-time-order-book" asChild>
+              <Button>Real Time</Button>
+            </Link>
           ),
           headerRight: () => (
             <Pressable onPress={signOut}>
@@ -71,6 +70,16 @@ export default function OrderBook() {
         }}
       />
       <FlatList
+        onRefresh={refetch}
+        refreshing={isFetching}
+        refreshControl={
+          <RefreshControl refreshing={isFetching} onRefresh={refetch} />
+        }
+        ListEmptyComponent={
+          <View style={tw`m-4`}>
+            {isLoading ? <ActivityIndicator /> : <Text>0 results</Text>}
+          </View>
+        }
         style={tw`bg-white`}
         data={rows}
         renderItem={({ item: { ask, bid } }) => (
@@ -87,37 +96,39 @@ export default function OrderBook() {
         )}
         contentContainerStyle={tw`pb-[${bottom}px]`}
         ListHeaderComponent={
-          <>
-            <View>
-              <View style={tw`flex flex-row`}>
-                <List.Item
-                  style={tw`flex-1`}
-                  title={bidAveragePrice}
-                  description="Average price (Bids)"
-                />
+          !isLoading ? (
+            <>
+              <View>
+                <View style={tw`flex flex-row`}>
+                  <List.Item
+                    style={tw`flex-1`}
+                    title={bidAveragePrice}
+                    description="Average price (Bids)"
+                  />
 
-                <List.Item
-                  style={tw`flex-1`}
-                  title={askAveragePrice}
-                  description="Average price (Asks)"
-                />
+                  <List.Item
+                    style={tw`flex-1`}
+                    title={askAveragePrice}
+                    description="Average price (Asks)"
+                  />
+                </View>
+
+                <View style={tw`flex flex-row`}>
+                  <List.Item
+                    style={tw`flex-1 pl-0`}
+                    title={bidTotalTradeSize}
+                    description="Total trade size (Bids)"
+                  />
+
+                  <List.Item
+                    style={tw`flex-1`}
+                    title={askTotalTradeSize}
+                    description="Total trade size (Asks)"
+                  />
+                </View>
               </View>
-
-              <View style={tw`flex flex-row`}>
-                <List.Item
-                  style={tw`flex-1 pl-0`}
-                  title={bidTotalTradeSize}
-                  description="Total trade size (Bids)"
-                />
-
-                <List.Item
-                  style={tw`flex-1`}
-                  title={askTotalTradeSize}
-                  description="Total trade size (Asks)"
-                />
-              </View>
-            </View>
-          </>
+            </>
+          ) : null
         }
       />
     </>
