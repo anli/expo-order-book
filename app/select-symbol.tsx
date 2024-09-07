@@ -1,10 +1,10 @@
 import tw from 'twrnc';
-import { ActivityIndicator, List, Text } from 'react-native-paper';
-import { View } from 'react-native';
+import { ActivityIndicator, List, Searchbar, Text } from 'react-native-paper';
+import { View, FlatList } from 'react-native';
 import { CurrencySymbol, useSymbols } from '@/shared/api';
 import { Link } from 'expo-router';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
-import { memo } from 'react';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { memo, useState } from 'react';
 
 const MemoItem = memo(function MemoItem({ item }: { item: CurrencySymbol }) {
   return (
@@ -23,26 +23,39 @@ const MemoItem = memo(function MemoItem({ item }: { item: CurrencySymbol }) {
 });
 
 export default function SelectSymbol() {
-  const { data, isLoading, refetch } = useSymbols();
+  const { data: symbols, isLoading, refetch } = useSymbols();
+  const [search, setSearch] = useState('');
+  const data = symbols?.filter((item) =>
+    item.symbol.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <View style={tw`flex-1`}>
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={!!data && isLoading}
-            onRefresh={refetch}
+    <FlatList
+      keyboardShouldPersistTaps="handled"
+      stickyHeaderIndices={[0]}
+      ListHeaderComponent={
+        <View>
+          <Searchbar
+            autoCapitalize="characters"
+            autoCorrect={false}
+            style={tw`m-4`}
+            placeholder="Search"
+            onChangeText={setSearch}
+            value={search}
           />
-        }
-        ListEmptyComponent={
-          <View style={tw`m-4`}>
-            {isLoading ? <ActivityIndicator /> : <Text>0 results</Text>}
-          </View>
-        }
-        data={data}
-        renderItem={({ item }) => <MemoItem item={item} />}
-        keyExtractor={(item) => item.symbol}
-      />
-    </View>
+        </View>
+      }
+      refreshControl={
+        <RefreshControl refreshing={!!data && isLoading} onRefresh={refetch} />
+      }
+      ListEmptyComponent={
+        <View style={tw`m-4`}>
+          {isLoading ? <ActivityIndicator /> : <Text>0 results</Text>}
+        </View>
+      }
+      data={data}
+      renderItem={({ item }) => <MemoItem item={item} />}
+      keyExtractor={(item) => item.symbol}
+    />
   );
 }

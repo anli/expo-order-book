@@ -6,11 +6,10 @@ import {
   useMemo
 } from 'react';
 import { LoginResponse, useLogin } from '@/shared/api';
-import { router } from 'expo-router';
 import { Alert } from 'react-native';
 
 const AuthContext = createContext<{
-  signIn: (pin: string) => Promise<void>;
+  signIn: (pin: string) => Promise<LoginResponse | void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
@@ -34,10 +33,9 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<string | null>(null);
-  const { mutate: login, isPending: isLoginLoading } = useLogin({
+  const { mutateAsync: login, isPending: isLoginLoading } = useLogin({
     onSuccess: (data: LoginResponse) => {
       setSession(data.accessToken);
-      router.replace('/');
     },
     onError: (error: Error) => {
       Alert.alert(error.message);
@@ -47,9 +45,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   const value = useMemo(
     () => ({
-      signIn: async (pin: string) => {
-        login(pin);
-      },
+      signIn: (pin: string) => login(pin),
       signOut: () => {
         setSession(null);
       },

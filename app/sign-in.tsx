@@ -1,6 +1,6 @@
 import { useSession } from '@/entities/session';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { DevSettings, Pressable, View } from 'react-native';
 import { Button, Text, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import tw from 'twrnc';
@@ -35,11 +35,18 @@ export default function SignIn() {
   const [showPin, setShowPin] = useState(false);
 
   useEffect(() => {
-    setValue('symbol', params.symbol);
+    params.symbol && setValue('symbol', params.symbol);
   }, [params.symbol, setValue]);
 
-  const handleSignIn = ({ pin }: FormValues) => {
-    signIn(pin);
+  useEffect(() => {
+    DevSettings.addMenuItem('Preset Pin', () => {
+      setValue('pin', 'Mys3cureP1n!123');
+    });
+  }, [setValue]);
+
+  const handleSignIn = async ({ symbol, pin }: FormValues) => {
+    await signIn(pin);
+    router.replace(`/?symbol=${symbol}`);
   };
 
   const handlePresentSelectSymbol = () => {
@@ -92,6 +99,8 @@ export default function SignIn() {
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}
+                  onSubmitEditing={handleSubmit(handleSignIn)}
+                  returnKeyType="done"
                   right={
                     !!value && (
                       <TextInput.Icon
