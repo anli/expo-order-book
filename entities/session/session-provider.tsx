@@ -20,7 +20,7 @@ const AuthContext = createContext<{
   isLoading: false
 });
 
-export function useSession() {
+export const useSession = () => {
   const value = useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {
     if (!value) {
@@ -29,9 +29,9 @@ export function useSession() {
   }
 
   return value;
-}
+};
 
-export function SessionProvider({ children }: PropsWithChildren) {
+export const SessionProvider = ({ children }: PropsWithChildren) => {
   const [session, setSession] = useState<string | null>(null);
   const { mutateAsync: login, isPending: isLoginLoading } = useLogin({
     onSuccess: (data: LoginResponse) => {
@@ -56,4 +56,4 @@ export function SessionProvider({ children }: PropsWithChildren) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};

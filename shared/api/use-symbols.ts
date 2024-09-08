@@ -3,9 +3,9 @@ import invariant from 'tiny-invariant';
 
 invariant(
   process.env.EXPO_PUBLIC_SERVER_HOST_URL,
-  'EXPO_PUBLIC_SERVER_PIN is not set'
+  'EXPO_PUBLIC_SERVER_HOST_URL is not set'
 );
-const url = `${process.env.EXPO_PUBLIC_SERVER_HOST_URL}/symbols`;
+const url = `${process.env.EXPO_PUBLIC_SERVER_HOST_URL}/v1/symbols`;
 
 export type CurrencySymbol = {
   symbol: string;

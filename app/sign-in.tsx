@@ -123,6 +123,7 @@ export default function SignIn() {
         </View>
       </View>
       <Button
+        loading={isLoading}
         disabled={isLoading}
         style={tw`m-4`}
         mode="contained"

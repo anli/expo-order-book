@@ -32,18 +32,19 @@ export default function SelectSymbol() {
   return (
     <FlatList
       keyboardShouldPersistTaps="handled"
-      stickyHeaderIndices={[0]}
       ListHeaderComponent={
-        <View>
-          <Searchbar
-            autoCapitalize="characters"
-            autoCorrect={false}
-            style={tw`m-4`}
-            placeholder="Search"
-            onChangeText={setSearch}
-            value={search}
-          />
-        </View>
+        !isLoading ? (
+          <View>
+            <Searchbar
+              autoCapitalize="characters"
+              autoCorrect={false}
+              style={tw`m-4`}
+              placeholder="Search"
+              onChangeText={setSearch}
+              value={search}
+            />
+          </View>
+        ) : null
       }
       refreshControl={
         <RefreshControl refreshing={!!data && isLoading} onRefresh={refetch} />

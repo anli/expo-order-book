@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
 
 invariant(
   process.env.EXPO_PUBLIC_SERVER_HOST_URL,
-  'EXPO_PUBLIC_SERVER_PIN is not set'
+  'EXPO_PUBLIC_SERVER_HOST_URL is not set'
 );
-const url = `${process.env.EXPO_PUBLIC_SERVER_HOST_URL}/market/orderbook/level2_100`;
+const url = `${process.env.EXPO_PUBLIC_SERVER_HOST_URL}/v1/market/orderbook/level2_100`;
 
 export type OrderBook = {
   time: string;
@@ -23,9 +23,13 @@ const getMarketOrderBook = async (symbol: string): Promise<OrderBook> => {
   return data;
 };
 
-export const useMarketOrderBook = (symbol: string) => {
+export const useMarketOrderBook = (
+  symbol: string,
+  options?: Omit<UseQueryOptions<OrderBook>, 'queryKey' | 'queryFn'>
+) => {
   return useQuery({
     queryKey: ['market-order-book', symbol],
-    queryFn: () => getMarketOrderBook(symbol)
+    queryFn: () => getMarketOrderBook(symbol),
+    ...options
   });
 };

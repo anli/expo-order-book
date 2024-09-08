@@ -1,7 +1,12 @@
-import { Stack } from 'expo-router';
-import { Text } from 'react-native-paper';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import tw from 'twrnc';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LiveOrderBookList } from '@/entities/order-book';
 
 export default function RealTimeOrderBook() {
+  const params = useLocalSearchParams<{ symbol: string }>();
+  const { bottom } = useSafeAreaInsets();
+
   return (
     <>
       <Stack.Screen
@@ -9,7 +14,10 @@ export default function RealTimeOrderBook() {
           headerTitle: 'Real Time'
         }}
       />
-      <Text>Real Time Order Book</Text>
+      <LiveOrderBookList
+        symbol={params.symbol}
+        contentContainerStyle={tw`pb-[${bottom}px]`}
+      />
     </>
   );
 }
