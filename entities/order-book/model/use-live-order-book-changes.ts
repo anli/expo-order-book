@@ -47,8 +47,8 @@ type Data = {
 export const useLiveOrderBookChanges = ({
   symbol,
   refetchInitialData,
-  orderBookIntervalMs = 2000,
-  summaryIntervalMs = 20000,
+  orderBookIntervalMs = 1000,
+  summaryIntervalMs = 60000,
   limit = 1000
 }: UseLiveOrderBookChangesProps) => {
   const messagesRef = useRef<MarketDataChange['data']['changes'][]>([]);

@@ -11,8 +11,6 @@ export type LoginResponse = {
 };
 
 const login = async (pin: string): Promise<LoginResponse> => {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
   return new Promise((resolve, reject) => {
     if (pin === process.env.EXPO_PUBLIC_SERVER_PIN) {
       return resolve({ accessToken: 'ACCESS_TOKEN' });

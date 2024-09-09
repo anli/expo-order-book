@@ -1,6 +1,6 @@
 import { useSession } from '@/entities/session';
 import { router, useLocalSearchParams } from 'expo-router';
-import { DevSettings, Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { Button, Text, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import tw from 'twrnc';
@@ -35,19 +35,21 @@ export default function SignIn() {
   const [showPin, setShowPin] = useState(false);
 
   useEffect(() => {
-    params.symbol && setValue('symbol', params.symbol);
-  }, [params.symbol, setValue]);
-
-  useEffect(() => {
-    DevSettings.addMenuItem('Prefill Form', () => {
-      setValue('symbol', 'BTC-USDT');
-      setValue('pin', 'Mys3cureP1n!123');
-    });
-  }, [setValue]);
+    params?.symbol && setValue('symbol', params?.symbol);
+  }, [params?.symbol, setValue]);
 
   const handleSignIn = async ({ symbol, pin }: FormValues) => {
-    await signIn(pin);
-    router.replace(`/?symbol=${symbol}`);
+    try {
+      await signIn(pin);
+      router.replace({
+        pathname: '/',
+        params: { symbol }
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    }
   };
 
   const handlePresentSelectSymbol = () => {
@@ -74,6 +76,7 @@ export default function SignIn() {
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}
+                  accessibilityLabel="Symbol"
                 />
               )}
               name="symbol"
@@ -90,6 +93,7 @@ export default function SignIn() {
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
+                  accessibilityLabel="Pin"
                   textContentType="password"
                   autoCapitalize="none"
                   autoCorrect={false}

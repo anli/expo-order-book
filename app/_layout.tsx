@@ -43,7 +43,7 @@ export default function Root() {
                 headerShown: false,
                 headerBackTitle: 'Back'
               }}>
-              <Stack.Screen name="sign-in" />
+              <Stack.Screen name="sign-in" initialParams={{}} />
               <Stack.Screen
                 name="select-symbol"
                 options={{

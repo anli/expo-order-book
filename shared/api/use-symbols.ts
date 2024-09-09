@@ -12,8 +12,6 @@ export type CurrencySymbol = {
 };
 
 const getSymbols = async (): Promise<CurrencySymbol[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
   const response = await fetch(url);
   const { data } = await response.json();
   return data.sort((a: CurrencySymbol, b: CurrencySymbol) =>

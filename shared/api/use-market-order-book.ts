@@ -15,8 +15,6 @@ export type OrderBook = {
 };
 
 const getMarketOrderBook = async (symbol: string): Promise<OrderBook> => {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
   const searchParams = new URLSearchParams({ symbol });
   const response = await fetch(`${url}?${searchParams.toString()}`);
   const { data } = await response.json();

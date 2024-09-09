@@ -6,7 +6,6 @@ import {
   useMemo
 } from 'react';
 import { LoginResponse, useLogin } from '@/shared/api';
-import { Alert } from 'react-native';
 
 const AuthContext = createContext<{
   signIn: (pin: string) => Promise<LoginResponse | void>;
@@ -36,9 +35,6 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
   const { mutateAsync: login, isPending: isLoginLoading } = useLogin({
     onSuccess: (data: LoginResponse) => {
       setSession(data.accessToken);
-    },
-    onError: (error: Error) => {
-      Alert.alert(error.message);
     }
   });
   const isLoading = isLoginLoading;
