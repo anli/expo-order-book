@@ -1,9 +1,16 @@
 import { useMarketOrderBook } from '@/shared/api';
-import { OrderBookList, OrderBookListProps } from './order-book-list';
+import {
+  OrderBookWholeNumberListProps,
+  OrderBookWholeNumberList
+} from './order-book-whole-number-list';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { OrderBookSummary } from './order-book-summary';
+import { getSummary } from '../model/get-summary';
 
-type StaticOrderBookListProps = Omit<OrderBookListProps, 'isLoading'> & {
+type StaticOrderBookListProps = Omit<
+  OrderBookWholeNumberListProps,
+  'isLoading'
+> & {
   symbol: string;
 };
 
@@ -12,9 +19,13 @@ export const StaticOrderBookList = ({
   ...rest
 }: StaticOrderBookListProps) => {
   const { data, refetch, isLoading, isFetching } = useMarketOrderBook(symbol);
+  const { averagePrice: bidAveragePrice, totalSize: bidTotalTradeSize } =
+    getSummary(data?.bids);
+  const { averagePrice: askAveragePrice, totalSize: askTotalTradeSize } =
+    getSummary(data?.asks);
 
   return (
-    <OrderBookList
+    <OrderBookWholeNumberList
       onRefresh={refetch}
       refreshing={isFetching}
       refreshControl={
@@ -23,7 +34,14 @@ export const StaticOrderBookList = ({
       data={data}
       isLoading={isLoading}
       ListHeaderComponent={
-        !!data ? <OrderBookSummary bids={data?.bids} asks={data?.asks} /> : null
+        !!data ? (
+          <OrderBookSummary
+            askAveragePrice={askAveragePrice}
+            bidAveragePrice={bidAveragePrice}
+            askTotalTradeSize={askTotalTradeSize}
+            bidTotalTradeSize={bidTotalTradeSize}
+          />
+        ) : null
       }
       {...rest}
     />

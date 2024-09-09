@@ -1,44 +1,33 @@
 import { formatCrypto, formatCurrency } from '@/shared/lib';
-import BigNumber from 'bignumber.js';
 import { View } from 'react-native';
 import { List } from 'react-native-paper';
 import tw from 'twrnc';
 
 type OrderBookSummaryProps = {
-  bids: [price: string, size: string][];
-  asks: [price: string, size: string][];
+  bidAveragePrice: string;
+  askAveragePrice: string;
+  bidTotalTradeSize: string;
+  askTotalTradeSize: string;
 };
 
-export const OrderBookSummary = ({ bids, asks }: OrderBookSummaryProps) => {
-  const bidAveragePrice = formatCurrency(
-    bids
-      .reduce((acc, bid) => acc.plus(BigNumber(bid[0])), BigNumber(0))
-      .dividedBy(bids.length)
-  );
-  const askAveragePrice = formatCurrency(
-    asks
-      .reduce((acc, ask) => acc.plus(BigNumber(ask[0])), BigNumber(0))
-      .dividedBy(asks.length)
-  );
-  const bidTotalTradeSize = formatCrypto(
-    bids.reduce((acc, bid) => acc.plus(BigNumber(bid[1])), BigNumber(0))
-  );
-  const askTotalTradeSize = formatCrypto(
-    asks.reduce((acc, ask) => acc.plus(BigNumber(ask[1])), BigNumber(0))
-  );
-
+export const OrderBookSummary = ({
+  bidAveragePrice,
+  askAveragePrice,
+  bidTotalTradeSize,
+  askTotalTradeSize
+}: OrderBookSummaryProps) => {
   return (
     <View>
       <View style={tw`flex flex-row`}>
         <List.Item
           style={tw`flex-1`}
-          title={bidAveragePrice}
+          title={formatCurrency(bidAveragePrice)}
           description="Average price (Bids)"
         />
 
         <List.Item
           style={tw`flex-1`}
-          title={askAveragePrice}
+          title={formatCurrency(askAveragePrice)}
           description="Average price (Asks)"
         />
       </View>
@@ -46,13 +35,13 @@ export const OrderBookSummary = ({ bids, asks }: OrderBookSummaryProps) => {
       <View style={tw`flex flex-row`}>
         <List.Item
           style={tw`flex-1 pl-0`}
-          title={bidTotalTradeSize}
+          title={formatCrypto(bidTotalTradeSize)}
           description="Total trade size (Bids)"
         />
 
         <List.Item
           style={tw`flex-1`}
-          title={askTotalTradeSize}
+          title={formatCrypto(askTotalTradeSize)}
           description="Total trade size (Asks)"
         />
       </View>

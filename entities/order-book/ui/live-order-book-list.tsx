@@ -1,10 +1,14 @@
-import { useLiveOrderBookChanges, useMarketOrderBook } from '@/shared/api';
-import { OrderBookList, OrderBookListProps } from './order-book-list';
+import { useMarketOrderBook } from '@/shared/api';
 import { OrderBookSummary } from './order-book-summary';
+import { useLiveOrderBookChanges } from '../model/use-live-order-book-changes';
+import { OrderBookList, OrderBookListProps } from './order-book-list';
+import { memo } from 'react';
 
 type LiveOrderBookListProps = Omit<OrderBookListProps, 'isLoading'> & {
   symbol: string;
 };
+
+const MemoOrderBookSummary = memo(OrderBookSummary);
 
 export const LiveOrderBookList = ({
   symbol,
@@ -20,10 +24,17 @@ export const LiveOrderBookList = ({
 
   return (
     <OrderBookList
-      data={data}
+      data={data?.orderBook}
       isLoading={isLoading}
       ListHeaderComponent={
-        !!data ? <OrderBookSummary bids={data?.bids} asks={data?.asks} /> : null
+        !!data?.summary ? (
+          <MemoOrderBookSummary
+            bidAveragePrice={data.summary?.bidAveragePrice}
+            askAveragePrice={data.summary?.askAveragePrice}
+            bidTotalTradeSize={data.summary?.bidTotalTradeSize}
+            askTotalTradeSize={data.summary?.askTotalTradeSize}
+          />
+        ) : null
       }
       {...rest}
     />

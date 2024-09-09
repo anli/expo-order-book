@@ -1,47 +1,42 @@
-import { ActivityIndicator, Text } from 'react-native-paper';
-import { FlatListProps, View } from 'react-native';
+import { ActivityIndicator, List, Text } from 'react-native-paper';
+import { SectionList, SectionListProps, View } from 'react-native';
 import tw from 'twrnc';
-import { FlatList } from 'react-native-gesture-handler';
-import {
-  compareNumericString,
-  formatCrypto,
-  groupByWholeNumber
-} from '@/shared/lib';
 import { OrderBook } from '@/shared/api';
 import { memo } from 'react';
+import { formatCrypto, formatCurrency } from '@/shared/lib';
 
-type Item = { ask: [string, string]; bid: [string, string] };
+type Item = [string, string];
 
 const RowItem = ({
-  bidPrice,
-  bidSize,
-  askPrice,
-  askSize
+  price,
+  size,
+  type
 }: {
-  bidPrice: string;
-  bidSize: string;
-  askPrice: string;
-  askSize: string;
+  price: string;
+  size: string;
+  type: 'Bids' | 'Asks';
 }) => {
   return (
-    <View style={tw`flex flex-row gap-2 mx-4 my-1`}>
-      <View style={tw`flex-1 flex-row justify-between`}>
-        <Text>{formatCrypto(bidSize)}</Text>
-        <Text style={tw`text-green-600 text-justify`}>{bidPrice}</Text>
-      </View>
-      <View style={tw`flex-1 flex-row justify-between`}>
-        <Text style={tw`text-red-600 text-justify`}>{askPrice}</Text>
-        <Text>{formatCrypto(askSize)}</Text>
-      </View>
-    </View>
+    <List.Item
+      title={formatCurrency(price)}
+      right={() => (
+        <Text
+          style={tw.style(
+            'text-justify',
+            type === 'Bids' ? 'text-green-600' : 'text-red-600'
+          )}>
+          {formatCrypto(size)}
+        </Text>
+      )}
+    />
   );
 };
 
 const MemoRowItem = memo(RowItem);
 
 export type OrderBookListProps = Omit<
-  FlatListProps<Item>,
-  'renderItem' | 'data' | 'hitSlop'
+  SectionListProps<Item>,
+  'renderItem' | 'sections' | 'hitSlop'
 > & {
   isLoading: boolean;
   data?: OrderBook;
@@ -52,36 +47,32 @@ export const OrderBookList = ({
   isLoading,
   ...rest
 }: OrderBookListProps) => {
-  const { bids = [], asks = [] } = data ?? {};
-  const wholeNumberBids = groupByWholeNumber(
-    bids.sort(([priceA], [priceB]) => compareNumericString(priceA, priceB))
-  );
-  const wholeNumberAsks = groupByWholeNumber(
-    asks.sort(([priceA], [priceB]) => compareNumericString(priceA, priceB))
-  );
-  const maxRowLength = Math.max(wholeNumberBids.length, wholeNumberAsks.length);
-  const rows = Array.from({ length: maxRowLength }, (_, index) => {
-    const bid = wholeNumberBids[index];
-    const ask = wholeNumberAsks[index];
-    return { ask, bid };
-  });
-
+  const sections = data
+    ? [
+        {
+          title: 'Bids',
+          data: data?.bids
+        },
+        {
+          title: 'Asks',
+          data: data?.asks
+        }
+      ]
+    : [];
   return (
-    <FlatList
-      data={rows}
+    <SectionList
+      keyExtractor={([price]) => price}
+      sections={sections}
+      renderSectionHeader={({ section: { title, data } }) => (
+        <List.Subheader
+          style={tw`bg-white`}>{`${title} (${data.length})`}</List.Subheader>
+      )}
       ListEmptyComponent={
-        <View style={tw`m-4`}>
-          {isLoading ? <ActivityIndicator /> : <Text>0 results</Text>}
-        </View>
+        <View style={tw`m-4`}>{isLoading && <ActivityIndicator />}</View>
       }
       style={tw`bg-white`}
-      renderItem={({ item: { ask, bid } }) => (
-        <MemoRowItem
-          bidPrice={bid?.[0]}
-          bidSize={bid?.[1]}
-          askPrice={ask?.[0]}
-          askSize={ask?.[1]}
-        />
+      renderItem={({ item: [price, size], section: { title } }) => (
+        <MemoRowItem price={price} size={size} type={title} />
       )}
       {...rest}
     />
